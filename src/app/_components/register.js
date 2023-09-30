@@ -25,7 +25,7 @@ const Register = (props) => {
       setName(null);
       e.target.reset();
     } catch (error) {
-      props.notify(error.response.data.msg || "Login failed", "error");
+      props.notify(error.response.data.msg || "Register failed", "error");
     } finally {
       setIsLoading(false);
     }

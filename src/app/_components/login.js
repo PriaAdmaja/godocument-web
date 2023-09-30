@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { userAction } from "@/redux/slices/user";
+import Link from "next/link";
 
 const Login = (props) => {
   const [email, setEmail] = useState(null);
@@ -23,9 +24,9 @@ const Login = (props) => {
       dispatch(userAction.submitToken(token));
       dispatch(userAction.submitName(name));
       dispatch(userAction.submitAvatar(avatar));
-      props.notify("Login success", 'success');
+      props.notify("Login success", "success");
     } catch (error) {
-      props.notify(error.response.data.msg || 'Login failed', 'error');
+      props.notify(error.response.data.msg || "Login failed", "error");
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +62,9 @@ const Login = (props) => {
             disabled={isLoading}
           />
           <label className="label">
-            <span className="label-text-alt cursor-pointer" >Forgot password?</span>
+            <span className="label-text-alt cursor-pointer">
+              <Link href={"/forgotpassword"}>Forgot password?</Link>
+            </span>
           </label>
         </div>
         {/* <p className="pt-2 cursor-pointer">Forget your password?</p> */}
