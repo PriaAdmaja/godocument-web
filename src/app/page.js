@@ -1,10 +1,19 @@
-"use client"
+"use client";
 import { Fragment, useState } from "react";
 import Login from "./_components/login";
-import Register from "./_components/register"
+import Register from "./_components/register";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const [tabSelected, setTabSelected] = useState("login");
+
+  const notify = (msg, type) => {
+    if (type === "success") {
+      return toast.success(msg);
+    }
+    toast.error(msg);
+  };
 
   return (
     <Fragment>
@@ -30,11 +39,12 @@ export default function Home() {
                 Register
               </a>
             </div>
-            <Login tabSelected={tabSelected} />
-            <Register tabSelected={tabSelected} />
+            <Login tabSelected={tabSelected} notify={notify} />
+            <Register tabSelected={tabSelected} notify={notify} />
           </div>
         </div>
       </main>
+      <ToastContainer />
     </Fragment>
   );
 }
