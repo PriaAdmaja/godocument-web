@@ -40,7 +40,7 @@ export default function Home() {
               </a>
             </div>
             <Login tabSelected={tabSelected} notify={notify} />
-            <Register tabSelected={tabSelected} notify={notify} />
+            <Register tabSelected={tabSelected} notify={notify} selectTab={setTabSelected} />
           </div>
         </div>
       </main>

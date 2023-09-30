@@ -23,9 +23,9 @@ const Login = (props) => {
       dispatch(userAction.submitToken(token));
       dispatch(userAction.submitName(name));
       dispatch(userAction.submitAvatar(avatar));
-      props.notify("Login success", 'success')
+      props.notify("Login success", 'success');
     } catch (error) {
-      props.notify(error.response.data.msg || 'Login failed', 'error')
+      props.notify(error.response.data.msg || 'Login failed', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -34,7 +34,7 @@ const Login = (props) => {
     <section
       className={`${
         props.tabSelected === "login" ? "flex" : "hidden"
-      } flex-col gap-3`}
+      } flex-col gap-2`}
     >
       <section>
         <div className="form-control w-full max-w-xs">
@@ -60,8 +60,11 @@ const Login = (props) => {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
           />
+          <label className="label">
+            <span className="label-text-alt cursor-pointer" >Forgot password?</span>
+          </label>
         </div>
-        <p className="pt-2 cursor-pointer">Forget your password?</p>
+        {/* <p className="pt-2 cursor-pointer">Forget your password?</p> */}
       </section>
       <button
         className={`btn btn-neutral ${isLoading ? "hidden" : "block"}`}
