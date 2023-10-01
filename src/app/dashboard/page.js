@@ -1,37 +1,50 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Header from "../_components/header";
 import Sidebar from "../_components/sidebar";
+import Loader from "../_components/loader";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
+  const [meta, setMeta] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { id, token } = useSelector((state) => state.user);
+
+  const router = useRouter();
 
   useEffect(() => {
     let getData = true;
     if (getData) {
       setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents/${id}`;
+      const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents?usersId=${id}`;
       axios
         .get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then((res) => setData(res.data.data))
-        .catch((err) => toast.error('Error get data'));
+        .then((res) => {
+          setData(res.data.data);
+          setMeta(res.data.meta);
+        })
+        .catch((err) => toast.error("Error get data"))
+        .finally(() => setIsLoading(false));
     }
     return () => {
       getData = false;
     };
   }, []);
-  
+
+  console.log(data);
+
+  if (isLoading) return <Loader isShow={isLoading} />;
+
   return (
     <>
       <Header />
@@ -49,7 +62,11 @@ const Dashboard = () => {
               <option>Title Asc</option>
               <option>Title Desc</option>
             </select>
-            <button type="button" className="btn btn-neutral right-5 top-5">
+            <button
+              type="button"
+              className="btn btn-neutral right-5 top-5"
+              onClick={() => router.push("/document")}
+            >
               Create New
             </button>
           </div>
@@ -66,36 +83,22 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* row 1 */}
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>
-                    <button className="btn btn-ghost btn-xs">details</button>
-                  </td>
-                </tr>
-                {/* row 2 */}
-                <tr>
-                  <th>2</th>
-                  <td>Hart Hagerty</td>
-                  <td>Hart Hagerty</td>
-                  <td>Desktop Support Technician</td>
-                  <td>
-                    <button className="btn btn-ghost btn-xs">details</button>
-                  </td>
-                </tr>
-                {/* row 3 */}
-                <tr>
-                  <th>3</th>
-                  <td>Brice Swyre</td>
-                  <td>Brice Swyre</td>
-                  <td>Tax Accountant</td>
-                  <td>
-                    <button className="btn btn-ghost btn-xs">details</button>
-                  </td>
-                </tr>
+                {data.map((datum, i) => {
+console.log(datum);
+                  return (
+                    <tr key={i}>
+                      <th>{datum.id}</th>
+                      <td>{datum.title}</td>
+                      <td>{datum.status}</td>
+                      <td>{String(datum.created_at).slice(0, 10)}</td>
+                      <td>
+                        <button className="btn btn-ghost btn-xs">
+                          details
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
