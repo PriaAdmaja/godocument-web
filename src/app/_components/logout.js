@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import jwtExpired from "@/utils/private-route/jwtExpired";
 
 const Logout = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,8 +30,9 @@ const Logout = () => {
       router.push("/");
       toast.success("Logout");
     } catch (error) {
-      console.log(error);
-      toast.error("Try again");
+      console.log(error.response.data.msg);
+      jwtExpired(error.response.data.msg)
+      // toast.error(error.response.data.msg || "Try again");
     } finally {
       setIsLoading(false);
     }
