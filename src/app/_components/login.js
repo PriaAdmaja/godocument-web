@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { userAction } from "@/redux/slices/user";
@@ -10,6 +11,7 @@ const Login = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const login = async () => {
     try {
@@ -24,10 +26,11 @@ const Login = (props) => {
       dispatch(userAction.submitToken(token));
       dispatch(userAction.submitName(name));
       dispatch(userAction.submitAvatar(avatar));
-      dispatch(userAction.submitEmail(email))
-      dispatch(userAction.submitId(id))
-      dispatch(userAction.submitRole(role))
+      dispatch(userAction.submitEmail(email));
+      dispatch(userAction.submitId(id));
+      dispatch(userAction.submitRole(role));
       props.notify("Login success", "success");
+      router.push("/dashboard");
     } catch (error) {
       props.notify(error.response.data.msg || "Login failed", "error");
     } finally {
