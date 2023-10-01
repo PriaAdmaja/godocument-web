@@ -32,7 +32,7 @@ const Login = (props) => {
       props.notify("Login success", "success");
       router.push("/dashboard");
     } catch (error) {
-      props.notify(error.response.data.msg || "Login failed", "error");
+      props.notify(error.response?.data.msg || "Login failed", "error");
     } finally {
       setIsLoading(false);
     }

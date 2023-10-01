@@ -53,7 +53,10 @@ const userSlice = createSlice({
                 ...prevState,
                 name: null,
                 token: null,
-                avatar: null
+                avatar: null,
+                id: null,
+                email: null,
+                role: null
             }
         }
     }
