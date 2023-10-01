@@ -20,10 +20,13 @@ const Login = (props) => {
       };
       const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/users/login`;
       const result = await axios.post(url, body);
-      const { token, name, avatar } = result.data.data;
+      const { token, name, avatar, id, role } = result.data.data;
       dispatch(userAction.submitToken(token));
       dispatch(userAction.submitName(name));
       dispatch(userAction.submitAvatar(avatar));
+      dispatch(userAction.submitEmail(email))
+      dispatch(userAction.submitId(id))
+      dispatch(userAction.submitRole(role))
       props.notify("Login success", "success");
     } catch (error) {
       props.notify(error.response.data.msg || "Login failed", "error");
