@@ -40,7 +40,6 @@ const Document = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(result.data?.data);
       toast.success(result.data.msg);
       setTimeout(() => {
         router.push('/dashboard')
