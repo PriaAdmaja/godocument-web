@@ -1,9 +1,8 @@
-
-
 const jwtExpired = (msg) => {
   if (msg === "jwt expired") {
-    localStorage.remove('persist:godocument')
+    localStorage.clear();
+    window.location.reload()
   }
 };
 
-export default jwtExpired
+export default jwtExpired;

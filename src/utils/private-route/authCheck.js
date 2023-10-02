@@ -5,7 +5,7 @@ const authCheck = (WrappedComponent) => {
   const Auth = (props) => {
     const router = useRouter();
 
-    const { token } = useSelector((state) => state.userData);
+    const { token } = useSelector((state) => state.user);
     if (!token) {
       router.push("/");
       return;

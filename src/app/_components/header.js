@@ -1,17 +1,36 @@
 "use client";
 import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import defaultAvatar from "../../assets/default-avatar.jpg";
 
 const Header = () => {
-    const [search, setSearch] = useState(null)
+  const [search, setSearch] = useState(null);
   const { avatar, name } = useSelector((state) => state.user);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const searchDocument = (e) => {
-    e.preventDefault()
-    console.log(search);
-  }
+    e.preventDefault();
+    createQueryParams("title", search);
+  };
+
+  const createQueryParams = (key, value) => {
+    const queryList = {};
+    const queryUpdate = [];
+    searchParams.forEach((value, key) => (queryList[key] = value));
+    queryList[key] = value;
+
+    for (const key in queryList) {
+      queryUpdate.push(`${key}=${queryList[key]}`);
+    }
+
+    const url = `${pathname}?${queryUpdate.join("&")}`;
+    router.push(url);
+  };
+
   return (
     <header className="flex justify-between items-center px-20 py-5 shadow-md bg-white">
       <p className="font-bold">GoDocument</p>

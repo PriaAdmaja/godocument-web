@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,20 +9,30 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "../_components/header";
 import Sidebar from "../_components/sidebar";
 import Loader from "../_components/loader";
+import jwtExpired from "@/utils/private-route/jwtExpired";
+import authCheck from "@/utils/private-route/authCheck";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
   const [meta, setMeta] = useState([]);
+  const [showSort, setShowSort] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  const [sortValue, setSortValue] = useState("");
+  const [statusValue, setStatusValue] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
   const { id, token } = useSelector((state) => state.user);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   useEffect(() => {
     let getData = true;
     if (getData) {
       setIsLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents?usersId=${id}`;
+      const url = `${
+        process.env.NEXT_PUBLIC_GODOCUMENT_API
+      }/documents?userId=${id}&limit=20&${searchParams.toString()}`;
       axios
         .get(url, {
           headers: {
@@ -33,15 +43,78 @@ const Dashboard = () => {
           setData(res.data.data);
           setMeta(res.data.meta);
         })
-        .catch((err) => toast.error("Error get data"))
+        .catch((err) => {
+          jwtExpired(err.response.data.msg);
+          toast.error("Error get data");
+        })
         .finally(() => setIsLoading(false));
     }
     return () => {
       getData = false;
     };
-  }, []);
+  }, [searchParams]);
 
-  console.log(data);
+  const createQueryParams = (key, value) => {
+    const queryList = {};
+    const queryUpdate = [];
+    searchParams.forEach((value, key) => (queryList[key] = value));
+    queryList[key] = value;
+
+    for (const key in queryList) {
+      queryUpdate.push(`${key}=${queryList[key]}`);
+    }
+
+    const url = `${pathname}?${queryUpdate.join("&")}`;
+    router.push(url);
+  };
+
+  const deleteQueryParams = (keyRemove) => {
+    const queryList = {};
+    const queryUpdate = [];
+    searchParams.forEach((value, key) => (queryList[key] = value));
+    
+    for (const key in queryList) {
+      if (keyRemove != key) {
+        queryUpdate.push(`${key}=${queryList[key]}`);
+      }
+    }
+
+    const url = `${pathname}?${queryUpdate.join("&")}`;
+    router.push(url);
+  };
+
+  const setSort = (value) => {
+    setShowSort(false);
+    setSortValue(value);
+    createQueryParams("sort", value);
+  };
+
+  const setStatus = (value) => {
+    setShowStatus(false);
+    setStatusValue(value);
+    if (value === 1) {
+      setStatusValue("Draft");
+      createQueryParams("statusId", value);
+      return;
+    }
+    if (value === 2) {
+      setStatusValue("Need check");
+      createQueryParams("statusId", value);
+      return;
+    }
+    if (value === 3) {
+      setStatusValue("Rejected");
+      createQueryParams("statusId", value);
+      return;
+    }
+    if (value === 4) {
+      setStatusValue("Release");
+      createQueryParams("statusId", value);
+      return;
+    }
+    setStatusValue("All");
+    deleteQueryParams('statusId')
+  };
 
   if (isLoading) return <Loader isShow={isLoading} />;
 
@@ -52,19 +125,96 @@ const Dashboard = () => {
         <Sidebar />
         <section className="w-4/5 p-3 flex flex-col items-center">
           <p className="text-2xl text-center pb-5">Document List</p>
-          <div className="flex justify-between items-baseline w-full">
-            <select className="select select-bordered select-sm  max-w-xs">
-              <option disabled selected>
-                Sort
-              </option>
-              <option>Id Asc</option>
-              <option>Id Desc</option>
-              <option>Title Asc</option>
-              <option>Title Desc</option>
-            </select>
+          <div className="flex justify-start gap-5 items-baseline w-full">
+            <div className="relative min-w-max">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() =>
+                  showSort ? setShowSort(false) : setShowSort(true)
+                }
+              >
+                Sort :{" "}
+                {sortValue === "titleAsc"
+                  ? "A-Z"
+                  : sortValue === "titleDesc"
+                  ? "Z-A"
+                  : "none"}
+              </button>
+              <div
+                className={`${
+                  showSort ? "block" : "hidden"
+                } join join-vertical absolute w-full left-0 top-8 z-50`}
+              >
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setSort("titleAsc")}
+                >
+                  A-Z
+                </button>
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setSort("titleDesc")}
+                >
+                  Z-A
+                </button>
+              </div>
+            </div>
+            <div className="relative w-40">
+              <button
+                className="btn btn-sm btn-ghost w-full"
+                onClick={() =>
+                  showStatus ? setShowStatus(false) : setShowStatus(true)
+                }
+              >
+                Status : {statusValue}
+              </button>
+              <div
+                className={`${
+                  showStatus ? "block" : "hidden"
+                } join join-vertical absolute w-full left-0 top-8 z-50`}
+              >
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setStatus(0)}
+                >
+                  All
+                </button>
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setStatus(1)}
+                >
+                  Draft
+                </button>
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setStatus(2)}
+                >
+                  Need Check
+                </button>
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setStatus(3)}
+                >
+                  Rejected
+                </button>
+                <button
+                  className="btn btn-sm join-item w-full"
+                  type="button"
+                  onClick={() => setStatus(4)}
+                >
+                  Release
+                </button>
+              </div>
+            </div>
             <button
               type="button"
-              className="btn btn-neutral right-5 top-5"
+              className="btn btn-neutral right-5 top-5 ml-auto"
               onClick={() => router.push("/document")}
             >
               Create New
@@ -75,8 +225,8 @@ const Dashboard = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th>Id</th>
-                  <th>Title</th>
+                  <th>No</th>
+                  <th>File Name</th>
                   <th>Status</th>
                   <th>Created Date</th>
                   <th></th>
@@ -84,15 +234,17 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 {data.map((datum, i) => {
-console.log(datum);
                   return (
                     <tr key={i}>
-                      <th>{datum.id}</th>
+                      <th>{i + 1}</th>
                       <td>{datum.title}</td>
                       <td>{datum.status}</td>
                       <td>{String(datum.created_at).slice(0, 10)}</td>
                       <td>
-                        <button className="btn btn-ghost btn-xs">
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          onClick={() => router.push(`/document/${datum.id}`)}
+                        >
                           details
                         </button>
                       </td>
@@ -108,4 +260,4 @@ console.log(datum);
   );
 };
 
-export default Dashboard;
+export default authCheck(Dashboard);

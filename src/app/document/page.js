@@ -10,6 +10,7 @@ import Header from "../_components/header";
 import Sidebar from "../_components/sidebar";
 import Tiptap from "../_components/tiptap";
 import Loader from "../_components/loader";
+import authCheck from "@/utils/private-route/authCheck";
 
 const Document = () => {
   const [editorContent, setEditorContent] = useState(null);
@@ -61,7 +62,7 @@ const Document = () => {
           <div className="w-full">
             <div className="form-control w-full max-w-xs mb-3">
               <label className="label">
-                <span className="">Title : </span>
+                <span className="">File Name : </span>
               </label>
               <input
                 type="text"
@@ -74,7 +75,7 @@ const Document = () => {
               <span className="">Content : </span>
             </label>
             <div className="w-full h-[400px] p-3 rounded-lg bg-white">
-              <Tiptap getContent={getContent} contentDb="halo" />
+              <Tiptap getContent={getContent} />
             </div>
             <button className="btn btn-neutral" onClick={createDocument}>
               Create
@@ -88,4 +89,4 @@ const Document = () => {
   );
 };
 
-export default Document;
+export default authCheck(Document);

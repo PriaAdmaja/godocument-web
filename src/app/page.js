@@ -4,8 +4,9 @@ import Login from "./_components/login";
 import Register from "./_components/register";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import loggedIn from "@/utils/private-route/loggedId";
 
-export default function Home() {
+function Home() {
   const [tabSelected, setTabSelected] = useState("login");
 
   const notify = (msg, type) => {
@@ -40,7 +41,11 @@ export default function Home() {
               </a>
             </div>
             <Login tabSelected={tabSelected} notify={notify} />
-            <Register tabSelected={tabSelected} notify={notify} selectTab={setTabSelected} />
+            <Register
+              tabSelected={tabSelected}
+              notify={notify}
+              selectTab={setTabSelected}
+            />
           </div>
         </div>
       </main>
@@ -48,3 +53,5 @@ export default function Home() {
     </Fragment>
   );
 }
+
+export default loggedIn(Home);

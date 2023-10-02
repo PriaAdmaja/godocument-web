@@ -39,11 +39,13 @@ import Text from "@tiptap/extension-text";
 // };
 
 const Tiptap = (props) => {
+  let editable = props.editable ? props.editable : true;
   const editor = useEditor({
+    editable,
     extensions: [Document, Paragraph, Text],
     content: props.contentDb ? props.contentDb : 'Type something here',
     onUpdate({ editor }) {
-      props.getContent(editor.getHTML());
+      props.getContent(editor.getText());
     },
   });
 
