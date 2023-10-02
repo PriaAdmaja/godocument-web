@@ -20,7 +20,7 @@ const DocumentId = () => {
   const pathname = usePathname();
   const documentId = pathname.split("/")[2];
   const router = useRouter();
-  const { token } = useSelector((state) => state.user);
+  const { token, role } = useSelector((state) => state.user);
 
   useEffect(() => {
     let getData = true;
@@ -98,24 +98,51 @@ const DocumentId = () => {
     setData(prevData);
   };
 
-  const sendSpv = async () => {
+  const docAction = async (status) => {
     try {
-      setDelLoading(true)
+      setDelLoading(true);
       const body = {
-        statusId: 2,
+        statusId: status,
       };
       const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents/${documentId}`;
-      await axios.patch(url, body, {
+      const result = await axios.patch(url, body, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success('Document has been send to supervisor')
+      toast.success(result.data.msg);
     } catch (error) {
       toast.error(error.response.data.msg || "Error");
     } finally {
-      setDelLoading(false)
+      setDelLoading(false);
     }
+  };
+
+  const downloadPdf = () => {
+    // try {
+    setDelLoading(true);
+    const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents/pdf/${documentId}`;
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      })
+      .then((res) => {
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(res.data);
+        a.download = `${data.title}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      })
+      .catch(() => {
+        toast.error(error.response.msg || "Error");
+      })
+      .finally(() => {
+        setDelLoading(false);
+      });
   };
 
   if (isLoading) return <Loader isShow={isLoading} />;
@@ -127,22 +154,39 @@ const DocumentId = () => {
         <Sidebar />
         <section className="w-4/5 p-3 ml-3 ">
           <div className="w-full">
-            <div className="form-control w-full max-w-xs mb-3">
-              <label className="label">
-                <span className="">File Name : </span>
-              </label>
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input input-bordered w-full input_sm "
-                value={data.title}
-                disabled={!editable}
-                onChange={(e) => editTitle(e.target.value)}
-              />
+            <div className="flex justify-between items-center">
+              <div className="form-control w-full max-w-xs mb-3">
+                <label className="label">
+                  <span className="">File Name : </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-full input_sm "
+                  value={data.title}
+                  disabled={!editable}
+                  onChange={(e) => editTitle(e.target.value)}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={downloadPdf}
+                className={`${
+                  data.status_id == 4 ? "block" : "hidden"
+                } btn btn-neutral btn-sm`}
+              >
+                Download PDF
+              </button>
             </div>
-            <label className="label">
-              <span className="">Content : </span>
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="label">
+                <span className="">Content : </span>
+              </label>
+              <div className="badge badge-outline font-semibold">
+                {data.status}
+              </div>
+            </div>
             <div className="w-full h-[400px] p-3 rounded-lg bg-white">
               {/* <Tiptap getContent={getContent} contentDb={data.content} /> */}
               <Tiptap
@@ -151,12 +195,15 @@ const DocumentId = () => {
                 getContent={getContent}
               />
             </div>
-            <div className="flex gap-5 mt-5">
+            <div
+              className={`${role == 1 ? "block" : "hidden"} flex gap-5 mt-5`}
+            >
               <div>
                 <button
                   type="button"
                   className={`btn btn-neutral ${editable ? "hidden" : "block"}`}
                   onClick={editing}
+                  disabled={data.status_id == 1 ? false : true}
                 >
                   Edit
                 </button>
@@ -164,6 +211,7 @@ const DocumentId = () => {
                   type="button"
                   className={`btn btn-neutral ${editable ? "block" : "hidden"}`}
                   onClick={editDoc}
+                  disabled={data?.status_id == 1 ? false : true}
                 >
                   Save
                 </button>
@@ -171,14 +219,40 @@ const DocumentId = () => {
               <button
                 className="btn btn-error"
                 type="button"
+                disabled={data?.status_id == 1 ? false : true}
                 onClick={() =>
                   document.getElementById("delete_doc").showModal()
                 }
               >
                 Delete
               </button>
-              <button className="btn btn-success" type="button" onClick={sendSpv}>
+              <button
+                className={`btn btn-success`}
+                type="button"
+                onClick={() => docAction(2)}
+                disabled={data.status_id == 1 ? false : true}
+              >
                 Send to Spv
+              </button>
+            </div>
+            <div
+              className={`${role == 2 ? "block" : "hidden"} flex gap-5 mt-5`}
+            >
+              <button
+                className="btn btn-error"
+                type="button"
+                disabled={data.status_id == 2 ? false : true}
+                onClick={() => docAction(3)}
+              >
+                Reject
+              </button>
+              <button
+                className={`btn btn-success`}
+                type="button"
+                onClick={() => docAction(4)}
+                disabled={data.status_id == 2 ? false : true}
+              >
+                Release
               </button>
             </div>
           </div>
@@ -204,7 +278,7 @@ const DocumentId = () => {
           </div>
         </div>
       </dialog>
-        <Loader isShow={delLoading} />
+      <Loader isShow={delLoading} />
       <ToastContainer />
     </>
   );

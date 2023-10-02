@@ -72,7 +72,7 @@ const Dashboard = () => {
     const queryList = {};
     const queryUpdate = [];
     searchParams.forEach((value, key) => (queryList[key] = value));
-    
+
     for (const key in queryList) {
       if (keyRemove != key) {
         queryUpdate.push(`${key}=${queryList[key]}`);
@@ -113,7 +113,7 @@ const Dashboard = () => {
       return;
     }
     setStatusValue("All");
-    deleteQueryParams('statusId')
+    deleteQueryParams("statusId");
   };
 
   if (isLoading) return <Loader isShow={isLoading} />;
@@ -213,6 +213,13 @@ const Dashboard = () => {
               </div>
             </div>
             <button
+              className="btn btn-sm btn-neutral"
+              type="buttton"
+              onClick={() => router.push("/dashboard")}
+            >
+              Reset
+            </button>
+            <button
               type="button"
               className="btn btn-neutral right-5 top-5 ml-auto"
               onClick={() => router.push("/document")}
@@ -220,12 +227,11 @@ const Dashboard = () => {
               Create New
             </button>
           </div>
-          <div className="overflow-x-auto w-full ">
+          <div className="overflow-x-auto w-full mt-5">
             <table className="table table-zebra">
               {/* head */}
               <thead>
                 <tr>
-                  <th>No</th>
                   <th>File Name</th>
                   <th>Status</th>
                   <th>Created Date</th>
@@ -236,7 +242,6 @@ const Dashboard = () => {
                 {data.map((datum, i) => {
                   return (
                     <tr key={i}>
-                      <th>{i + 1}</th>
                       <td>{datum.title}</td>
                       <td>{datum.status}</td>
                       <td>{String(datum.created_at).slice(0, 10)}</td>

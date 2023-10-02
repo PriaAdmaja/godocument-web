@@ -27,7 +27,8 @@ const Header = () => {
       queryUpdate.push(`${key}=${queryList[key]}`);
     }
 
-    const url = `${pathname}?${queryUpdate.join("&")}`;
+
+    const url = `dashboard?${queryUpdate.join("&")}`;
     router.push(url);
   };
 
