@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "../../_components/header";
 import Sidebar from "@/app/_components/sidebar";
 
-const changePassword = () => {
+const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState(null);
   const [newPassword, setNewPassword] = useState(null);
   const [reNewPassword, setReNewPassword] = useState(null);
@@ -128,4 +128,4 @@ const changePassword = () => {
   );
 };
 
-export default authCheck(changePassword);
+export default authCheck(ChangePassword);
