@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEditor, EditorContent, useCurrentEditor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
+import Placeholder from "@tiptap/extension-placeholder";
 
 // const MenuBar = () => {
 //   const { editor } = useCurrentEditor();
@@ -39,11 +40,26 @@ import Text from "@tiptap/extension-text";
 // };
 
 const Tiptap = (props) => {
-  let editable = props.editable ? props.editable : true;
+  // const [editable, setEditable] = useState(false);
+
+  // useEffect(() => {
+  //   if (props.editable === undefined) {
+  //     return setEditable(true);
+  //   }
+  //   setEditable(props.editable);
+  // }, [props.editable]);
+
   const editor = useEditor({
-    editable,
-    extensions: [Document, Paragraph, Text],
-    content: props.contentDb ? props.contentDb : 'Type something here',
+    editable : props.editable || true,
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      Placeholder.configure({
+        placeholder: "Create document here ...",
+      }),
+    ],
+    content: props.contentDb ? props.contentDb : "",
     onUpdate({ editor }) {
       props.getContent(editor.getText());
     },

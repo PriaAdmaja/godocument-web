@@ -22,7 +22,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const router = useRouter();
-  const { id, token } = useSelector((state) => state.user);
+  const { id, token, role } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,6 +70,7 @@ const Profile = () => {
       setSaveLoading(false)
     }
   };
+  console.log(profile);
 
   const newProfile = (key, value) => {
     const prefData = { ...profile };
@@ -103,7 +104,7 @@ const Profile = () => {
               </div>
               <div className="text-center">
                 <p className="text-xs py-2">{profile.email}</p>
-                <p className="text-xs py-2">Staff</p>
+                <p className="text-xs py-2">{profile.role}</p>
                 <p className="font-bold text-2xl">{profile.name}</p>
                 <p>{profile.biodata ? profile.biodata : ""}</p>
               </div>

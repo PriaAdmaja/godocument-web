@@ -16,6 +16,7 @@ const DocumentId = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [delLoading, setDelLoading] = useState(false);
   const [editable, setEditable] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   const pathname = usePathname();
   const documentId = pathname.split("/")[2];
@@ -57,7 +58,7 @@ const DocumentId = () => {
       toast.success(result.data.msg);
       setTimeout(() => {
         router.push("/dashboard");
-      }, 2000);
+      }, 1000);
     } catch (error) {
       toast.error(error.response.data.msg || "Error");
     } finally {
@@ -75,6 +76,9 @@ const DocumentId = () => {
         },
       });
       toast.success(result.data.msg);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
     } catch (error) {
       toast.error(error.response.data.msg || "Error");
     } finally {
@@ -111,6 +115,9 @@ const DocumentId = () => {
         },
       });
       toast.success(result.data.msg);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
     } catch (error) {
       toast.error(error.response.data.msg || "Error");
     } finally {
@@ -119,7 +126,6 @@ const DocumentId = () => {
   };
 
   const downloadPdf = () => {
-    // try {
     setDelLoading(true);
     const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/documents/pdf/${documentId}`;
     axios
@@ -145,12 +151,31 @@ const DocumentId = () => {
       });
   };
 
+  document.onkeydown = (e) => {
+    if (e.ctrlKey && e.key == 'p') {
+      e.preventDefault();
+    }
+  };
+  document.onmouseleave = () => setIsHidden(true);
+  document.onclick = () => setIsHidden(false);
+  document.onkeyup = (e) => {
+    if(e.key == 'PrintScreen') {
+      navigator.clipboard.writeText('')
+    }
+  }
+
+
   if (isLoading) return <Loader isShow={isLoading} />;
 
   return (
     <>
       <Header />
-      <main className="flex px-16 py-5">
+      <main
+        className="flex px-16 py-5"
+        onKeyDown={(e) => console.log(e.key)}
+        // onKeyUp={(e) => console.log(e.key)}
+        // onKeyDownCapture={}
+      >
         <Sidebar />
         <section className="w-4/5 p-3 ml-3 ">
           <div className="w-full">
@@ -187,7 +212,7 @@ const DocumentId = () => {
                 {data.status}
               </div>
             </div>
-            <div className="w-full h-[400px] p-3 rounded-lg bg-white">
+            <div className={`${isHidden ? 'blur-xl' : ''} w-full h-[400px] p-3 rounded-lg bg-white`}>
               {/* <Tiptap getContent={getContent} contentDb={data.content} /> */}
               <Tiptap
                 contentDb={data.content}
@@ -257,6 +282,7 @@ const DocumentId = () => {
             </div>
           </div>
         </section>
+        <Loader isShow={delLoading} />
       </main>
       <dialog id="delete_doc" className="modal">
         <div className="modal-box">
@@ -278,7 +304,6 @@ const DocumentId = () => {
           </div>
         </div>
       </dialog>
-      <Loader isShow={delLoading} />
       <ToastContainer />
     </>
   );

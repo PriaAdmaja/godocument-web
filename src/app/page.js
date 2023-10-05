@@ -19,7 +19,7 @@ function Home() {
   return (
     <Fragment>
       <main className="flex flex-col justify-center items-center p-20 gap-10">
-        <h1 className="text-5xl font-bold">GoDocument</h1>
+        <p className="text-5xl font-bold">GoDocument</p>
         <div className="card w-96 bg-base-100 shadow-xl">
           <div className="card-body">
             <div className="tabs ">

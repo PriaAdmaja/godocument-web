@@ -16,6 +16,7 @@ const Document = () => {
   const [editorContent, setEditorContent] = useState(null);
   const [title, setTitle] = useState(null);
   const [isLoading, setIsloading] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   const { token } = useSelector((state) => state.user);
   const router = useRouter();
@@ -42,12 +43,26 @@ const Document = () => {
       });
       toast.success(result.data.msg);
       setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+        router.push("/dashboard");
+      }, 2000);
     } catch (error) {
       toast.error(error.response.data.msg || "Error");
     } finally {
       setIsloading(false);
+    }
+  };
+
+  document.onkeydown = (e) => {
+    if (e.ctrlKey && e.key == "p") {
+      e.preventDefault();
+    }
+  };
+  document.onmouseleave = () => setIsHidden(true);
+  document.onclick = () => setIsHidden(false);
+  document.onkeyup = (e) => {
+    if (e.key == "PrintScreen") {
+      navigator.clipboard.writeText("");
+      document.getElementById("print_warn").showModal();
     }
   };
 
@@ -73,7 +88,11 @@ const Document = () => {
             <label className="label">
               <span className="">Content : </span>
             </label>
-            <div className="w-full h-[400px] p-3 rounded-lg bg-white">
+            <div
+              className={`${
+                isHidden ? "blur-lg" : ""
+              } w-full h-[400px] p-3 rounded-lg bg-white`}
+            >
               <Tiptap getContent={getContent} />
             </div>
             <button className="btn btn-neutral" onClick={createDocument}>
@@ -83,6 +102,15 @@ const Document = () => {
           <Loader isShow={isLoading} />
         </section>
       </main>
+      <dialog id="print_warn" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Hello!</h3>
+          <p className="py-4">PrintScreen is forbidden</p>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
       <ToastContainer />
     </>
   );

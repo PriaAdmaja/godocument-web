@@ -13,6 +13,7 @@ import jwtExpired from "@/utils/private-route/jwtExpired";
 import authCheck from "@/utils/private-route/authCheck";
 
 const Dashboard = () => {
+  const { id, token, role } = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [meta, setMeta] = useState([]);
   const [showSort, setShowSort] = useState(false);
@@ -20,7 +21,6 @@ const Dashboard = () => {
   const [sortValue, setSortValue] = useState("");
   const [statusValue, setStatusValue] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
-  const { id, token } = useSelector((state) => state.user);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,9 +30,16 @@ const Dashboard = () => {
     let getData = true;
     if (getData) {
       setIsLoading(true);
-      const url = `${
-        process.env.NEXT_PUBLIC_GODOCUMENT_API
-      }/documents?userId=${id}&limit=20&${searchParams.toString()}`;
+      let url;
+      if (role == 1) {
+        url = `${
+          process.env.NEXT_PUBLIC_GODOCUMENT_API
+        }/documents?userId=${id}&limit=20&${searchParams.toString()}`;
+      } else {
+        url = `${
+          process.env.NEXT_PUBLIC_GODOCUMENT_API
+        }/documents?limit=20&${searchParams.toString()}`;
+      }
       axios
         .get(url, {
           headers: {
