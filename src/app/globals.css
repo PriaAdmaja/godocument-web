@@ -37,12 +37,3 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
-
-@media print {
-  /* .no-print {
-     display: none;  /* hide whole page */
-  /* } */ */
-  html, body {
-    display: none;  /* hide whole page */
- }
-}
