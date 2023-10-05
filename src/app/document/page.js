@@ -62,7 +62,7 @@ const Document = () => {
   document.onkeyup = (e) => {
     if (e.key == "PrintScreen") {
       navigator.clipboard.writeText("");
-      document.getElementById("print_warn").showModal();
+      document.getElementById("print_warn_1").showModal();
     }
   };
 
@@ -102,7 +102,7 @@ const Document = () => {
           <Loader isShow={isLoading} />
         </section>
       </main>
-      <dialog id="print_warn" className="modal">
+      <dialog id="print_warn_1" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Hello!</h3>
           <p className="py-4">PrintScreen is forbidden</p>

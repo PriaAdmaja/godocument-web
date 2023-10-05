@@ -161,6 +161,7 @@ const DocumentId = () => {
   document.onkeyup = (e) => {
     if(e.key == 'PrintScreen') {
       navigator.clipboard.writeText('')
+      document.getElementById("print_warn_2").showModal();
     }
   }
 
@@ -303,6 +304,15 @@ const DocumentId = () => {
             </button>
           </div>
         </div>
+      </dialog>
+      <dialog id="print_warn_2" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Hello!</h3>
+          <p className="py-4">PrintScreen is forbidden</p>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
       <ToastContainer />
     </>
