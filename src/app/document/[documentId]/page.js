@@ -10,6 +10,7 @@ import Header from "@/app/_components/header";
 import Sidebar from "@/app/_components/sidebar";
 import Loader from "@/app/_components/loader";
 import Tiptap from "@/app/_components/tiptap";
+import jwtExpired from "@/utils/private-route/jwtExpired";
 
 const DocumentId = () => {
   const [data, setData] = useState([]);
@@ -60,6 +61,7 @@ const DocumentId = () => {
         router.push("/dashboard");
       }, 1000);
     } catch (error) {
+      jwtExpired(error.response.data.msg);
       toast.error(error.response.data.msg || "Error");
     } finally {
       setDelLoading(false);
@@ -80,6 +82,7 @@ const DocumentId = () => {
         router.push("/dashboard");
       }, 1000);
     } catch (error) {
+      jwtExpired(error.response.data.msg);
       toast.error(error.response.data.msg || "Error");
     } finally {
       setDelLoading(false);
@@ -119,6 +122,7 @@ const DocumentId = () => {
         router.push("/dashboard");
       }, 1000);
     } catch (error) {
+      jwtExpired(error.response.data.msg);
       toast.error(error.response.data.msg || "Error");
     } finally {
       setDelLoading(false);
@@ -144,6 +148,7 @@ const DocumentId = () => {
         a.remove();
       })
       .catch(() => {
+        jwtExpired(error.response.data.msg);
         toast.error(error.response.msg || "Error");
       })
       .finally(() => {
@@ -154,6 +159,7 @@ const DocumentId = () => {
   document.onkeydown = (e) => {
     if (e.ctrlKey && e.key == 'p') {
       e.preventDefault();
+
     }
   };
   document.onmouseleave = () => setIsHidden(true);
