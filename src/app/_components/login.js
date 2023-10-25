@@ -23,6 +23,7 @@ const Login = (props) => {
       const url = `${process.env.NEXT_PUBLIC_GODOCUMENT_API}/users/login`;
       const result = await axios.post(url, body);
       const { token, name, avatar, id, role } = result.data.data;
+      document.cookie = `token=${token}`
       dispatch(userAction.submitToken(token));
       dispatch(userAction.submitName(name));
       dispatch(userAction.submitAvatar(avatar));
